@@ -1,8 +1,8 @@
 #ifndef _XFIFODEFSH_   
 #define _XFIFODEFSH_   
 
-#define XFIFO_QUEUES_COUNT  10			  // количество очередей   
-#define XFIFO_QUEUE_SIZE    65535	      // размер памяти, выделяемый под одну очередь   
+#define XFIFO_QUEUES_COUNT  10			  // РєРѕР»РёС‡РµСЃС‚РІРѕ РѕС‡РµСЂРµРґРµР№   
+#define XFIFO_QUEUE_SIZE    65535	      // СЂР°Р·РјРµСЂ РїР°РјСЏС‚Рё, РІС‹РґРµР»СЏРµРјС‹Р№ РїРѕРґ РѕРґРЅСѓ РѕС‡РµСЂРµРґСЊ   
 
 
 #endif  // _XFIFODEFSH_   

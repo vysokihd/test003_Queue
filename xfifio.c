@@ -4,10 +4,10 @@
 
 #define INCREMENT(X)	X = ++X % XFIFO_QUEUE_SIZE	
 
-static uint16_t head[XFIFO_QUEUES_COUNT] = { 0 };						//Начало очереди
-static uint16_t tail[XFIFO_QUEUES_COUNT] = { 0 };						//Конец очереди
-static uint16_t queFree[XFIFO_QUEUES_COUNT] = { 0 };					//Кол-во свободных ячеек
-static uint8_t que[XFIFO_QUEUES_COUNT][XFIFO_QUEUE_SIZE];				//Массив очередей
+static uint16_t head[XFIFO_QUEUES_COUNT] = { 0 };						//РќР°С‡Р°Р»Рѕ РѕС‡РµСЂРµРґРё
+static uint16_t tail[XFIFO_QUEUES_COUNT] = { 0 };						//РљРѕРЅРµС† РѕС‡РµСЂРµРґРё
+static uint16_t queFree[XFIFO_QUEUES_COUNT] = { 0 };					//РљРѕР»-РІРѕ СЃРІРѕР±РѕРґРЅС‹С… СЏС‡РµРµРє
+static uint8_t que[XFIFO_QUEUES_COUNT][XFIFO_QUEUE_SIZE];				//РњР°СЃСЃРёРІ РѕС‡РµСЂРµРґРµР№
 
 QUE_ERR xfifo_init(int fifo_num)
 {
@@ -23,73 +23,73 @@ QUE_ERR xfifo_init(int fifo_num)
 
 QUE_ERR xfifo_put(int fifo_num, uint8_t* buff, uint8_t dataSize)
 {
-	//Проверка на не нулевой указатель
+	//РџСЂРѕРІРµСЂРєР° РЅР° РЅРµ РЅСѓР»РµРІРѕР№ СѓРєР°Р·Р°С‚РµР»СЊ
 	if (buff == NULL)
 	{
 		return QUE_ERR_NULLPTR;
 	}
-	//Проверка на валидность номера очереди
+	//РџСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ РЅРѕРјРµСЂР° РѕС‡РµСЂРµРґРё
 	if ((fifo_num > XFIFO_QUEUES_COUNT) || (fifo_num < 0))
 	{
 		return QUE_ERR_FIFO_NUM;
 	}
-	//Проверка на нулевой размер записываемых данных
+	//РџСЂРѕРІРµСЂРєР° РЅР° РЅСѓР»РµРІРѕР№ СЂР°Р·РјРµСЂ Р·Р°РїРёСЃС‹РІР°РµРјС‹С… РґР°РЅРЅС‹С…
 	if (dataSize == 0)
 	{
 		return QUE_ERR_NODATA;
 	}
-	//Проверка, не выходит ли размер записываемых данных за размер свободных ячеек в очереди
+	//РџСЂРѕРІРµСЂРєР°, РЅРµ РІС‹С…РѕРґРёС‚ Р»Рё СЂР°Р·РјРµСЂ Р·Р°РїРёСЃС‹РІР°РµРјС‹С… РґР°РЅРЅС‹С… Р·Р° СЂР°Р·РјРµСЂ СЃРІРѕР±РѕРґРЅС‹С… СЏС‡РµРµРє РІ РѕС‡РµСЂРµРґРё
 	if ((dataSize + 1) > queFree[fifo_num])
 	{
 		return QUE_ERR_NOMEMORY;
 	}
 	
-	//Запись в очередь размера сообщения
+	//Р—Р°РїРёСЃСЊ РІ РѕС‡РµСЂРµРґСЊ СЂР°Р·РјРµСЂР° СЃРѕРѕР±С‰РµРЅРёСЏ
 	que[fifo_num][tail[fifo_num]] = dataSize;
 	INCREMENT(tail[fifo_num]);
 
-	//Запись в очередь сообщения
+	//Р—Р°РїРёСЃСЊ РІ РѕС‡РµСЂРµРґСЊ СЃРѕРѕР±С‰РµРЅРёСЏ
 	for (int i = 0; i < dataSize; i++)
 	{
 		que[fifo_num][tail[fifo_num]] = buff[i];
 		INCREMENT(tail[fifo_num]);
 	}
 
-	queFree[fifo_num] -= (dataSize + 1);		//Декремент кол-ва свободных ячеек
+	queFree[fifo_num] -= (dataSize + 1);		//Р”РµРєСЂРµРјРµРЅС‚ РєРѕР»-РІР° СЃРІРѕР±РѕРґРЅС‹С… СЏС‡РµРµРє
 	return QUE_ERR_NO;
 }
 
 QUE_ERR xfifo_get(int fifo_num, uint8_t* buff, uint8_t buffSize, uint8_t* dataSize)
 {
-	//Проверка на не нулевой указатель
+	//РџСЂРѕРІРµСЂРєР° РЅР° РЅРµ РЅСѓР»РµРІРѕР№ СѓРєР°Р·Р°С‚РµР»СЊ
 	if(buff == NULL || dataSize == NULL)
 	{
 		return QUE_ERR_NULLPTR;
 	}
-	//Проверка на наличие данных в очереди
+	//РџСЂРѕРІРµСЂРєР° РЅР° РЅР°Р»РёС‡РёРµ РґР°РЅРЅС‹С… РІ РѕС‡РµСЂРµРґРё
 	if (queFree[fifo_num] == XFIFO_QUEUE_SIZE)
 	{
-		return QUE_ERR_EMPTY;					//Данные в очереди отсутствуют
+		return QUE_ERR_EMPTY;					//Р”Р°РЅРЅС‹Рµ РІ РѕС‡РµСЂРµРґРё РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚
 	}
-	//Проверка на валидность номера очереди
+	//РџСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ РЅРѕРјРµСЂР° РѕС‡РµСЂРµРґРё
 	if ((fifo_num > XFIFO_QUEUES_COUNT) || (fifo_num < 0))
 	{
 		return QUE_ERR_FIFO_NUM;
 	}
-	//Размер извлекаемых данных превышает размер буфера
+	//Р Р°Р·РјРµСЂ РёР·РІР»РµРєР°РµРјС‹С… РґР°РЅРЅС‹С… РїСЂРµРІС‹С€Р°РµС‚ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР°
 	*dataSize = que[fifo_num][head[fifo_num]];
 	if (*dataSize > buffSize)
 	{
-		return 	QUE_ERR_LOBUFF_SIZE;			//Размер сообщения превышает размер буфера для записи
+		return 	QUE_ERR_LOBUFF_SIZE;			//Р Р°Р·РјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ РїСЂРµРІС‹С€Р°РµС‚ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РґР»СЏ Р·Р°РїРёСЃРё
 	}
 	INCREMENT(head[fifo_num]);
-	//Извлечение сообщения из очереди в буфер
+	//РР·РІР»РµС‡РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РёР· РѕС‡РµСЂРµРґРё РІ Р±СѓС„РµСЂ
 	for (int i = 0; i < *dataSize; i++)
 	{
 		buff[i] = que[fifo_num][head[fifo_num]];
 		INCREMENT(head[fifo_num]);
 	}
-	//Инкремент кол-ва свободных ячеек
+	//РРЅРєСЂРµРјРµРЅС‚ РєРѕР»-РІР° СЃРІРѕР±РѕРґРЅС‹С… СЏС‡РµРµРє
 	queFree[fifo_num] += (*dataSize + 1);
 	return QUE_ERR_NO;
 }
